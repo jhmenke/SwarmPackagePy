@@ -11,7 +11,7 @@ class ba(intelligence.sw):
     """
 
     def __init__(self, n, function, lb, ub, dimension, iteration, r0=0.9,
-                 V0=0.5, fmin=0, fmax=0.02, alpha=0.9, csi=0.9):
+                 V0=0.5, fmin=0, fmax=0.02, alpha=0.9, csi=0.9, initfunc=None):
         """
         :param n: number of agents
         :param function: test function
@@ -28,13 +28,17 @@ class ba(intelligence.sw):
          (default value is 0.9)
         :param csi: constant for change a level of impulse emission
          (default value is 0.9)
+        :param initfunc: function to initialize agents (default value is None, so that numpy.random.uniform is used)
         """
 
         super(ba, self).__init__()
 
+        if not callable(initfunc):
+            initfunc = np.random.uniform
+            
         r = [r0 for i in range(n)]
 
-        self.__agents = np.random.uniform(lb, ub, (n, dimension))
+        self.__agents = initfunc(lb, ub, (n, dimension))
         self._points(self.__agents)
 
         velocity = np.zeros((n, dimension))
@@ -42,7 +46,7 @@ class ba(intelligence.sw):
 
         Pbest = self.__agents[np.array([function(i)
                                         for i in self.__agents]).argmin()]
-        Gbest = Pbest
+        Gbest = Pbest[:]
 
         f = fmin + (fmin - fmax)
 
@@ -56,7 +60,7 @@ class ba(intelligence.sw):
 
             for i in range(n):
                 if random() > r[i]:
-                    sol[i] = Gbest + np.random.uniform(-1, 1, (
+                    sol[i] = Gbest + initfunc(-1, 1, (
                         1, dimension)) * sum(V) / n
 
             for i in range(n):
@@ -72,6 +76,6 @@ class ba(intelligence.sw):
             Pbest = self.__agents[
                 np.array([function(x) for x in self.__agents]).argmin()]
             if function(Pbest) < function(Gbest):
-                Gbest = Pbest
+                Gbest = Pbest[:]
 
         self._set_Gbest(Gbest)

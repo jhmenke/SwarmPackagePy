@@ -10,7 +10,7 @@ class ssa(intelligence.sw):
     Social Spider Optimization
     """
 
-    def __init__(self, n, function, lb, ub, dimension, iteration, pf=0.4):
+    def __init__(self, n, function, lb, ub, dimension, iteration, pf=0.4, initfunc=None):
         """
         :param n: number of agents
         :param function: test function
@@ -19,11 +19,15 @@ class ssa(intelligence.sw):
         :param dimension: space dimension
         :param iteration: the number of iterations
         :param pf: random parameter from 0 to 1 (default value is 0.4)
+        :param initfunc: function to initialize agents (default value is None, so that numpy.random.uniform is used)
         """
 
         super(ssa, self).__init__()
 
-        self.__agents = np.random.uniform(lb, ub, (n, dimension))
+        if not callable(initfunc):
+            initfunc = np.random.uniform
+
+        self.__agents = initfunc(lb, ub, (n, dimension))
 
         nf = floor((0.9 - random() * 0.25) * n)
         nm = n - nf
@@ -37,7 +41,7 @@ class ssa(intelligence.sw):
         pw = np.array([function(x) for x in self.__agents]).argmax()
         Pbest = self.__agents[pb]
         Pworst = self.__agents[pw]
-        Gbest = Pbest
+        Gbest = Pbest[:]
 
         for t in range(iteration):
 
@@ -129,7 +133,7 @@ class ssa(intelligence.sw):
             Pbest = self.__agents[pb]
             Pworst = self.__agents[pw]
             if function(Pbest) < function(Gbest):
-                Gbest = Pbest
+                Gbest = Pbest[:]
 
         self._set_Gbest(Gbest)
 

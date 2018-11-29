@@ -12,7 +12,7 @@ warnings.filterwarnings("ignore")
 class chso(intelligence.sw):
     """Chicken Swarm Optimization"""
 
-    def __init__(self, n, function, lb, ub, dimension, iteration, G=5, FL=0.5):
+    def __init__(self, n, function, lb, ub, dimension, iteration, G=5, FL=0.5, initfunc=None):
         """
         :param n: number of agents
         :param function: test function
@@ -24,16 +24,20 @@ class chso(intelligence.sw):
         value is 5)
         :param FL: parameter, which means that the chick would follow its
         mother to forage for food (0 < FL < 2. Default value is 0.5)
+        :param initfunc: function to initialize agents (default value is None, so that numpy.random.uniform is used)
         """
 
         super(chso, self).__init__()
 
+        if not callable(initfunc):
+            initfunc = np.random.uniform
+            
         rn = ceil(0.15 * n)
         hn = ceil(0.7 * n)
         cn = n - rn - hn
         mn = ceil(0.2 * n)
 
-        self.__agents = np.random.uniform(lb, ub, (n, dimension))
+        self.__agents = initfunc(lb, ub, (n, dimension))
         pbest = self.__agents
         self._points(self.__agents)
 
@@ -41,7 +45,7 @@ class chso(intelligence.sw):
         pfit = fitness
 
         Pbest = self.__agents[np.array(fitness).argmin()]
-        Gbest = Pbest
+        Gbest = Pbest[:]
 
         for t in range(iteration):
 
@@ -104,7 +108,7 @@ class chso(intelligence.sw):
 
             Pbest = self.__agents[np.array(fitness).argmin()]
             if function(Pbest) < function(Gbest):
-                Gbest = Pbest
+                Gbest = Pbest[:]
 
         self._set_Gbest(Gbest)
 
@@ -142,4 +146,4 @@ class chso(intelligence.sw):
                     self.__agents[i][j] = round(self.__agents[i][j])
 
             if str(fit) == 'nan':
-                self.__agents[i] = np.random.uniform(lb, ub, (1, dimension))
+                self.__agents[i] = initfunc(lb, ub, (1, dimension))

@@ -8,7 +8,7 @@ class gwo(intelligence.sw):
     Grey Wolf Optimizer
     """
 
-    def __init__(self, n, function, lb, ub, dimension, iteration):
+    def __init__(self, n, function, lb, ub, dimension, iteration, initfunc=None):
         """
         :param n: number of agents
         :param function: test function
@@ -16,11 +16,15 @@ class gwo(intelligence.sw):
         :param ub: upper limits for plot axes
         :param dimension: space dimension
         :param iteration: number of iterations
+        :param initfunc: function to initialize agents (default value is None, so that numpy.random.uniform is used)
         """
 
         super(gwo, self).__init__()
 
-        self.__agents = np.random.uniform(lb, ub, (n, dimension))
+        if not callable(initfunc):
+            initfunc = np.random.uniform
+
+        self.__agents = initfunc(lb, ub, (n, dimension))
         self._points(self.__agents)
         alpha, beta, delta = self.__get_abd(n, function)
 

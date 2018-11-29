@@ -10,7 +10,7 @@ class ca(intelligence.sw):
     """
 
     def __init__(self, n, function, lb, ub, dimension, iteration, mr=10, smp=2,
-                 spc=False, cdc=1, srd=0.1, w=0.1, c=1.05, csi=0.6):
+                 spc=False, cdc=1, srd=0.1, w=0.1, c=1.05, csi=0.6, initfunc=None):
         """
         :param n: number of agents
         :param function: test function
@@ -27,17 +27,21 @@ class ca(intelligence.sw):
         :param w: constant (default value is 0.1)
         :param c: constant (default value is 1.05)
         :param csi: constant (default value is 0.6)
+        :param initfunc: function to initialize agents (default value is None, so that numpy.random.uniform is used)
         """
 
         super(ca, self).__init__()
 
-        self.__agents = np.random.uniform(lb, ub, (n, dimension))
+        if not callable(initfunc):
+            initfunc = np.random.uniform
+            
+        self.__agents = initfunc(lb, ub, (n, dimension))
         velocity = np.zeros((n, dimension))
         self._points(self.__agents)
 
         Pbest = self.__agents[np.array([function(x)
                                         for x in self.__agents]).argmin()]
-        Gbest = Pbest
+        Gbest = Pbest[:]
 
         flag = self.__set_flag(n, mr)
         if spc:
@@ -92,7 +96,7 @@ class ca(intelligence.sw):
             Pbest = self.__agents[
                 np.array([function(x) for x in self.__agents]).argmin()]
             if function(Pbest) < function(Gbest):
-                Gbest = Pbest
+                Gbest = Pbest[:]
                 self.__agents = np.clip(self.__agents, lb, ub)
             flag = self.__set_flag(n, mr)
             self._points(self.__agents)

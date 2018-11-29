@@ -10,7 +10,7 @@ class bfo(intelligence.sw):
     """
 
     def __init__(self, n, function, lb, ub, dimension, iteration,
-                 Nc=2, Ns=12, C=0.2, Ped=1.15):
+                 Nc=2, Ns=12, C=0.2, Ped=1.15, initfunc=None):
         """
         :param n: number of agents
         :param function: test function
@@ -23,11 +23,15 @@ class bfo(intelligence.sw):
         :param C: the size of step taken in the random direction specified by
         the tumble (default value is 0.2)
         :param Ped: elimination-dispersal probability (default value is 1.15)
+        :param initfunc: function to initialize agents (default value is None, so that numpy.random.uniform is used)
         """
 
         super(bfo, self).__init__()
 
-        self.__agents = np.random.uniform(lb, ub, (n, dimension))
+        if not callable(initfunc):
+            initfunc = np.random.uniform
+            
+        self.__agents = initfunc(lb, ub, (n, dimension))
         self._points(self.__agents)
 
         n_is_even = True
@@ -36,7 +40,7 @@ class bfo(intelligence.sw):
 
         J = np.array([function(x) for x in self.__agents])
         Pbest = self.__agents[J.argmin()]
-        Gbest = Pbest
+        Gbest = Pbest[:]
 
         C_list = [C - C * 0.9 * i / iteration for i in range(iteration)]
         Ped_list = [Ped - Ped * 0.5 * i / iteration for i in range(iteration)]
@@ -49,7 +53,7 @@ class bfo(intelligence.sw):
 
             for j in range(Nc):
                 for i in range(n):
-                    dell = np.random.uniform(-1, 1, dimension)
+                    dell = initfunc(-1, 1, dimension)
                     self.__agents[i] += C_list[t] * np.linalg.norm(dell) * dell
 
                     for m in range(Ns):
@@ -58,7 +62,7 @@ class bfo(intelligence.sw):
                             self.__agents[i] += C_list[t] * np.linalg.norm(dell) \
                                                 * dell
                         else:
-                            dell = np.random.uniform(-1, 1, dimension)
+                            dell = initfunc(-1, 1, dimension)
                             self.__agents[i] += C_list[t] * np.linalg.norm(dell) \
                                                 * dell
 
@@ -85,13 +89,13 @@ class bfo(intelligence.sw):
                 for i in range(n):
                     r = random()
                     if r >= Ped_list[t]:
-                        self.__agents[i] = np.random.uniform(lb, ub, dimension)
+                        self.__agents[i] = initfunc(lb, ub, dimension)
 
             J = np.array([function(x) for x in self.__agents])
             self._points(self.__agents)
 
             Pbest = self.__agents[J.argmin()]
             if function(Pbest) < function(Gbest):
-                Gbest = Pbest
+                Gbest = Pbest[:]
 
         self._set_Gbest(Gbest)

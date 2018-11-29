@@ -11,16 +11,17 @@ class cso(intelligence.sw):
     """
 
     def __init__(self, n, function, lb, ub, dimension, iteration, pa=0.25,
-                 nest=100):
+                 nest=100, initfunc=None):
         """
         :param n: number of agents
         :param function: test function
-        :param lb: lower limits for plot axes
-        :param ub: upper limits for plot axes
+        :param lb: lower limits for the function inputs
+        :param ub: upper limits for function outputs
         :param dimension: space dimension
         :param iteration: number of iterations
         :param pa: probability of cuckoo's egg detection (default value is 0.25)
         :param nest: number of nests (default value is 100)
+        :param initfunc: function to initialize agents (default value is None, so that numpy.random.uniform is used)
         """
 
         super(cso, self).__init__()
@@ -35,11 +36,13 @@ class cso(intelligence.sw):
         v = np.array([normalvariate(0, 1) for k in range(dimension)])
         step = u / abs(v) ** (1 / beta)
 
-        self.__agents = np.random.uniform(lb, ub, (n, dimension))
-        self.__nests = np.random.uniform(lb, ub, (nest, dimension))
+        if not callable(initfunc):
+            initfunc = np.random.uniform
+        self.__agents = initfunc(lb, ub, (n, dimension))
+        self.__nests = initfunc(lb, ub, (nest, dimension))
         Pbest = self.__nests[np.array([function(x)
                                        for x in self.__nests]).argmin()]
-        Gbest = Pbest
+        Gbest = Pbest[:]
         self._points(self.__agents)
 
         for t in range(iteration):
@@ -59,7 +62,7 @@ class cso(intelligence.sw):
 
             for i in worst_nests:
                 if random() < pa:
-                    self.__nests[i] = np.random.uniform(lb, ub, (1, dimension))
+                    self.__nests[i] = initfunc(lb, ub, (1, dimension))
 
             if nest > n:
                 mworst = n
@@ -81,7 +84,7 @@ class cso(intelligence.sw):
                                         for x in self.__nests]).argmin()]
 
             if function(Pbest) < function(Gbest):
-                Gbest = Pbest
+                Gbest = Pbest[:]
 
         self._set_Gbest(Gbest)
 

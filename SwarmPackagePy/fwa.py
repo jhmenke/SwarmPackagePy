@@ -8,7 +8,8 @@ class fwa(intelligence.sw):
     """
     Firework Algorithm
     """
-    def __init__(self, n, function, lb, ub, dimension, iteration, m1=7, m2=7, eps=0.001, amp=2, a=0.3, b=3):
+    def __init__(self, n, function, lb, ub, dimension, iteration, m1=7, m2=7, eps=0.001, amp=2, a=0.3, b=3,
+                 initfunc=None):
 
         """
         :param n: number of fireworks
@@ -27,16 +28,20 @@ class fwa(intelligence.sw):
 	(default value is 0.3)
         :param b: parameter controlling the upper bound for number of normal sparks,
 	 b must be greater than a (b is set to 3 by default)
+        :param initfunc: function to initialize agents (default value is None, so that numpy.random.uniform is used)
         """
 
         super(fwa, self).__init__()
 
-        self.__agents = np.random.uniform(lb, ub, (n, dimension))
+        if not callable(initfunc):
+            initfunc = np.random.uniform
+
+        self.__agents = initfunc(lb, ub, (n, dimension))
         self._points(self.__agents)
 
         Pbest = self.__agents[
             np.array([function(x) for x in self.__agents]).argmin()]
-        Gbest = Pbest
+        Gbest = Pbest[:]
 
 
         for i in range(iteration):
@@ -54,7 +59,7 @@ class fwa(intelligence.sw):
             Pbest = self.__agents[
                 np.array([function(x) for x in self.__agents]).argmin()]
             if function(Pbest) < function(Gbest):
-                Gbest = Pbest
+                Gbest = Pbest[:]
 
         self._set_Gbest(Gbest)
 

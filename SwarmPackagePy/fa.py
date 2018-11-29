@@ -10,7 +10,7 @@ class fa(intelligence.sw):
     """
 
     def __init__(self, n, function, lb, ub, dimension, iteration, csi=1, psi=1,
-                 alpha0=1, alpha1=0.1, norm0=0, norm1=0.1):
+                 alpha0=1, alpha1=0.1, norm0=0, norm1=0.1, initfunc=None):
         """
         :param n: number of agents
         :param function: test function
@@ -29,16 +29,20 @@ class fa(intelligence.sw):
         (default value is 0)
         :param norm1: second parameter for a normal (Gaussian) distribution
         (default value is 0.1)
+        :param initfunc: function to initialize agents (default value is None, so that numpy.random.uniform is used)
         """
 
         super(fa, self).__init__()
-
-        self.__agents = np.random.uniform(lb, ub, (n, dimension))
+        
+        if not callable(initfunc):
+            initfunc = np.random.uniform
+            
+        self.__agents = initfunc(lb, ub, (n, dimension))
         self._points(self.__agents)
 
         Pbest = self.__agents[np.array([function(x)
                                         for x in self.__agents]).argmin()]
-        Gbest = Pbest
+        Gbest = Pbest[:]
 
         for t in range(iteration):
 
@@ -60,7 +64,7 @@ class fa(intelligence.sw):
             Pbest = self.__agents[
                 np.array([function(x) for x in self.__agents]).argmin()]
             if function(Pbest) < function(Gbest):
-                Gbest = Pbest
+                Gbest = Pbest[:]
 
         self._set_Gbest(Gbest)
 

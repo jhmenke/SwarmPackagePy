@@ -9,7 +9,7 @@ class wsa(intelligence.sw):
     """
 
     def __init__(self, n, function, lb, ub, dimension, iteration, ro0=2,
-                 eta=0.005):
+                 eta=0.005, initfunc=None):
         """
         :param n: number of agents
         :param function: test function
@@ -21,16 +21,20 @@ class wsa(intelligence.sw):
 	(default value is 2)
         :param eta: probability of message distortion at large distances
 	(default value is 0.005)
+        :param initfunc: function to initialize agents (default value is None, so that numpy.random.uniform is used)
         """
 
         super(wsa, self).__init__()
 
-        self.__agents = np.random.uniform(lb, ub, (n, dimension))
+        if not callable(initfunc):
+            initfunc = np.random.uniform
+
+        self.__agents = initfunc(lb, ub, (n, dimension))
         self._points(self.__agents)
 
         Pbest = self.__agents[np.array([function(x)
                                         for x in self.__agents]).argmin()]
-        Gbest = Pbest
+        Gbest = Pbest[:]
 
         for t in range(iteration):
             new_agents = self.__agents
@@ -38,7 +42,7 @@ class wsa(intelligence.sw):
                 y = self.__better_and_nearest_whale(i, n, function)
                 if y:
                     new_agents[i] += np.dot(
-                        np.random.uniform(0, ro0 *
+                        initfunc(0, ro0 *
                             np.exp(-eta * self.__whale_dist(i, y))),
                         self.__agents[y] - self.__agents[i])
             self.__agents = new_agents
@@ -48,7 +52,7 @@ class wsa(intelligence.sw):
             Pbest = self.__agents[np.array([function(x)
                                             for x in self.__agents]).argmin()]
             if function(Pbest) < function(Gbest):
-                Gbest = Pbest
+                Gbest = Pbest[:]
 
         self._set_Gbest(Gbest)
 

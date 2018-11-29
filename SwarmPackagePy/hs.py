@@ -10,7 +10,7 @@ class hs(intelligence.sw):
     """
 
     def __init__(self, n, function, lb, ub, dimension, iteration, par=0.5,
-                 hmcr=0.5, bw=0.5):
+                 hmcr=0.5, bw=0.5, initfunc=None):
         """
         :param n: number of agents
         :param function: test function
@@ -21,13 +21,17 @@ class hs(intelligence.sw):
         :param par: pitch adjusting rate (default value is 0.5)
         :param hmcr: harmony consideration rate (default value is 0.5)
         :param bw: bandwidth (default value is 0.5)
+        :param initfunc: function to initialize agents (default value is None, so that numpy.random.uniform is used)
         """
 
         super(hs, self).__init__()
 
+        if not callable(initfunc):
+            initfunc = np.random.uniform
+
         nn = n
 
-        self.__agents = np.random.uniform(lb, ub, (n, dimension))
+        self.__agents = initfunc(lb, ub, (n, dimension))
         self._points(self.__agents)
 
         Gbest = self.__agents[np.array([function(x)
@@ -53,7 +57,7 @@ class hs(intelligence.sw):
             Pbest = self.__agents[
                 np.array([function(x) for x in self.__agents]).argmin()]
             if function(Pbest) < function(Gbest):
-                Gbest = Pbest
+                Gbest = Pbest[:]
 
             self._points(self.__agents)
 
