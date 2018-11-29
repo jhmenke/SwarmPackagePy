@@ -16,8 +16,8 @@ class chso(intelligence.sw):
         """
         :param n: number of agents
         :param function: test function
-        :param lb: lower limits for plot axes
-        :param ub: upper limits for plot axes
+        :param lb: lower bound for the function variables
+        :param ub: upper bound for the function variables
         :param dimension: space dimension
         :param iteration: number of iterations
         :param G: after what time relationship will be upgraded (default

@@ -13,7 +13,7 @@ class pso(intelligence.sw):
         """
         :param n: number of agents
         :param function: test function
-        :param lb: lower limits for plot axes
+        :param lb: lower bound for the function variables
         :param ub: upper limits for plot azes
         :param dimension: space dimension
         :param iteration: the number of iterations

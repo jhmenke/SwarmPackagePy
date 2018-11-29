@@ -14,8 +14,8 @@ class fwa(intelligence.sw):
         """
         :param n: number of fireworks
         :param function: test function
-        :param lb: lower limits for plot axes
-        :param ub: upper limits for plot axes
+        :param lb: lower bound for the function variables
+        :param ub: upper bound for the function variables
         :param dimension: space dimension
         :param iteration: the number of iterations
         :param m1: parameter controlling the number of normal sparks

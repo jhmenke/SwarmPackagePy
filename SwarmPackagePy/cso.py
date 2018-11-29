@@ -15,8 +15,8 @@ class cso(intelligence.sw):
         """
         :param n: number of agents
         :param function: test function
-        :param lb: lower limits for the function inputs
-        :param ub: upper limits for function outputs
+        :param lb: lower bound for the function variables
+        :param ub: upper bound for the function variables
         :param dimension: space dimension
         :param iteration: number of iterations
         :param pa: probability of cuckoo's egg detection (default value is 0.25)

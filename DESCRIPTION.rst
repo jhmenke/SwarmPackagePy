@@ -19,8 +19,8 @@ Every algorithm has arguments listed below:
 
 * n: number of agents
 * function: test function
-* lb: lower limits for plot axes
-* ub: upper limits for plot axes
+* lb: lower bound for the function variables
+* ub: upper bound for the function variables
 * dimension: space dimension
 * iteration: number of iterations
 

@@ -14,8 +14,8 @@ class ssa(intelligence.sw):
         """
         :param n: number of agents
         :param function: test function
-        :param lb: lower limits for plot axes
-        :param ub: upper limits for plot axes
+        :param lb: lower bound for the function variables
+        :param ub: upper bound for the function variables
         :param dimension: space dimension
         :param iteration: the number of iterations
         :param pf: random parameter from 0 to 1 (default value is 0.4)
