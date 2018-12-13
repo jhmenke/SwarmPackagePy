@@ -32,7 +32,7 @@ class gwo(intelligence.sw):
 
         for t in range(iteration):
 
-            a = 2 - 2 * t / iteration
+            a = 2 * (1 - t / iteration)
 
             r1 = np.random.random((n, dimension))
             r2 = np.random.random((n, dimension))
