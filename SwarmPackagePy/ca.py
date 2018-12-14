@@ -48,13 +48,13 @@ class ca(intelligence.sw):
             for i in range(n):
                 if flag[i] == 0:
                     if spc:
-                        cop = self.__change_copy([self.__agents[i]], cdc, srd)[0]
+                        cop = self.__change_copy([self.__agents[i]], cdc, srd, lb, ub)[0]
                         tmp = [self.__agents[i] for _ in range(sm)]
                         tmp.append(cop)
                         copycat = np.array(tmp)
                     else:
                         copycat = np.array([self.__agents[i] for _ in range(sm)])
-                    copycat = self.__change_copy(copycat, cdc, srd)
+                    copycat = self.__change_copy(copycat, cdc, srd, lb, ub)
                     if copycat.all() == np.array([copycat[0] for _ in range(sm)]).all():
                         P = np.array([1 for _ in range(len(copycat))])
                     else:
@@ -90,7 +90,7 @@ class ca(intelligence.sw):
         return flag
 
     @staticmethod
-    def __change_copy(copycat, cdc, crd):
+    def __change_copy(copycat, cdc, crd, lb, ub):
         for i in range(len(copycat)):
             flag = [0 for _ in range(len(copycat[i]))]
             c = cdc
@@ -98,7 +98,7 @@ class ca(intelligence.sw):
                 tmp = randint(0, len(copycat[i]) - 1)
                 if flag[tmp] == 0:
                     c -= 1
-                    copycat[i][tmp] = copycat[i][tmp] + choice([-1, 1]) * crd
+                    copycat[i][tmp] = min(ub, max(lb, copycat[i][tmp] + choice([-1, 1]) * crd))
         return copycat
 
     @staticmethod

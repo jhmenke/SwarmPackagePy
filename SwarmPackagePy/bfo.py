@@ -26,6 +26,8 @@ class bfo(intelligence.sw):
         """
 
         super(bfo, self).__init__()
+        ub_arr = np.ones((dimension, )) * ub
+        lb_arr = np.ones((dimension, )) * lb
 
         if not callable(initfunc):
             initfunc = np.random.uniform
@@ -53,6 +55,8 @@ class bfo(intelligence.sw):
                         else:
                             dell = np.array(initfunc(-1, 1, dimension))
                             self.__agents[i] += C_list[t] * np.linalg.norm(dell) * dell
+                    self.__agents[i] = np.amax((np.vstack((self.__agents[i], lb_arr))), axis=0)
+                    self.__agents[i] = np.amin((np.vstack((self.__agents[i], ub_arr))), axis=0)
                 J = np.array([function(x) for x in self.__agents])
                 J_chem += [J]
             J_chem = np.array(J_chem)
