@@ -1,5 +1,6 @@
 import numpy as np
 from random import random
+from numpy.random import choice
 
 from . import intelligence
 
@@ -44,17 +45,17 @@ class bfo(intelligence.sw):
         J_last = J[::1]
         for t in range(iteration):
             J_chem = [J[::1]]
-            for j in range(Nc):
+            for _ in range(Nc):
                 for i in range(n):
                     dell = np.array(initfunc(-1, 1, dimension))
                     self.__agents[i] += C_list[t] * np.linalg.norm(dell) * dell
-                    for m in range(Ns):
+                    for _ in range(Ns):
                         if function(self.__agents[i]) < J_last[i]:
                             J_last[i] = J[i]
-                            self.__agents[i] += C_list[t] * np.linalg.norm(dell) * dell
+                            self.__agents[i] += C_list[t] * np.linalg.norm(dell) * dell * choice([-1, 1], len(dell))
                         else:
                             dell = np.array(initfunc(-1, 1, dimension))
-                            self.__agents[i] += C_list[t] * np.linalg.norm(dell) * dell
+                            self.__agents[i] += C_list[t] * np.linalg.norm(dell) * dell * choice([-1, 1], len(dell))
                     self.__agents[i] = np.amax((np.vstack((self.__agents[i], lb_arr))), axis=0)
                     self.__agents[i] = np.amin((np.vstack((self.__agents[i], ub_arr))), axis=0)
                 J = np.array([function(x) for x in self.__agents])
