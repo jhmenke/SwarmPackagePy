@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 
 
-def animation(agents, function, lb, ub, sr=False):
+def animation(agents, function, lb, ub, sr=False, fn="result"):
 
     side = np.linspace(lb, ub, (ub - lb) * 5)
     X, Y = np.meshgrid(side, side)
@@ -35,7 +35,7 @@ def animation(agents, function, lb, ub, sr=False):
 
     if sr:
 
-        ani.save('result.mp4')
+        ani.save(f'{fn}.mp4')
 
     plt.show()
 
